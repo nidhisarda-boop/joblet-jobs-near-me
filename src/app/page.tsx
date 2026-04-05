@@ -1,282 +1,46 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
-
-interface Job {
-  id: string; title: string; company: string; location: string;
-  work_mode: string; salary_min: number; salary_max: number;
-  dist_miles: number | null; created_at: string; tags: string[];
-}
-
-const MOCK_JOBS: Job[] = [
-  { id: "1", title: "Class A CDL Truck Driver Jobs", company: "Naeve Inc.", location: "Roscoe, Illinois, United States", work_mode: "onsite", salary_min: 78000, salary_max: 96000, dist_miles: 2.3, created_at: "2026-04-02T10:00:00Z", tags: ["CDL-A", "OTR", "Regional"] },
-  { id: "2", title: "Technician / Lead (Low Voltage)", company: "ElectraTech", location: "Rockford, IL, United States", work_mode: "onsite", salary_min: 55000, salary_max: 72000, dist_miles: 8.1, created_at: "2026-04-03T08:00:00Z", tags: ["Low Voltage", "Installation", "Lead"] },
-  { id: "3", title: "Commercial Construction PM", company: "BuildRight LLC", location: "Belvidere, IL, United States", work_mode: "onsite", salary_min: 95000, salary_max: 130000, dist_miles: 12.4, created_at: "2026-04-01T12:00:00Z", tags: ["Construction", "Estimator", "PM"] },
-  { id: "4", title: "Sales Coordinator", company: "MidWest Supply Co", location: "Loves Park, IL, United States", work_mode: "onsite", salary_min: 45000, salary_max: 58000, dist_miles: 5.7, created_at: "2026-04-03T14:00:00Z", tags: ["Sales", "Coordination", "CRM"] },
-  { id: "5", title: "Carpenter Foreman", company: "Heritage Builders", location: "South Beloit, IL, United States", work_mode: "onsite", salary_min: 62000, salary_max: 80000, dist_miles: 3.9, created_at: "2026-04-02T16:00:00Z", tags: ["Carpentry", "Foreman", "Construction"] },
-  { id: "6", title: "Dispatcher", company: "RoadRunner Logistics", location: "Machesney Park, IL, United States", work_mode: "onsite", salary_min: 42000, salary_max: 55000, dist_miles: 6.8, created_at: "2026-03-30T09:00:00Z", tags: ["Dispatch", "Logistics", "Transportation"] },
-  { id: "7", title: "Full Stack Engineer", company: "Joveo", location: "Remote (US)", work_mode: "remote", salary_min: 125000, salary_max: 165000, dist_miles: null, created_at: "2026-04-03T11:00:00Z", tags: ["Node.js", "React", "PostgreSQL"] },
-  { id: "8", title: "Bilingual Retail Sales Consultant", company: "AT&T", location: "Rockford, IL, United States", work_mode: "onsite", salary_min: 38000, salary_max: 52000, dist_miles: 9.2, created_at: "2026-04-01T08:00:00Z", tags: ["Retail", "Bilingual", "Sales"] },
-  { id: "9", title: "Data Scientist", company: "RemoteAI Corp", location: "Remote", work_mode: "remote", salary_min: 130000, salary_max: 170000, dist_miles: null, created_at: "2026-04-03T07:00:00Z", tags: ["Python", "ML", "TensorFlow"] },
-  { id: "10", title: "Construction General Manager", company: "Apex Construction", location: "Cherry Valley, IL, United States", work_mode: "onsite", salary_min: 110000, salary_max: 150000, dist_miles: 14.1, created_at: "2026-04-03T15:00:00Z", tags: ["General Manager", "Construction"] },
-  { id: "11", title: "Drive with DoorDash", company: "DoorDash", location: "Rockford, IL, United States", work_mode: "onsite", salary_min: 30000, salary_max: 55000, dist_miles: 7.5, created_at: "2026-04-03T09:00:00Z", tags: ["Delivery", "Driver", "Flexible"] },
-  { id: "12", title: "Recruiter (Contract)", company: "Joblet.ai", location: "Remote (Anywhere)", work_mode: "remote", salary_min: 70000, salary_max: 95000, dist_miles: null, created_at: "2026-04-04T06:00:00Z", tags: ["Recruiting", "ATS", "Sourcing"] },
+const JOBS = [
+  {id:"1",title:"Electrical Engineer",company:"Empire Electric",location:"Manhasset, NY",work_mode:"onsite",salary:"$92K-$105K",dist_miles:3.2,posted:"1d ago",lat:40.798,lng:-73.699,category:"Infrastructure"},
+  {id:"2",title:"Construction Superintendent",company:"Imagine Unlimited",location:"Temple, TX",work_mode:"onsite",salary:"$85K-$110K",dist_miles:8.7,posted:"1d ago",lat:31.098,lng:-97.343,category:"Infrastructure"},
+  {id:"3",title:"Class A CDL Truck Driver",company:"Naeve Inc.",location:"Roscoe, IL",work_mode:"onsite",salary:"$78K+",dist_miles:2.1,posted:"1d ago",lat:42.413,lng:-89.009,category:"Transport"},
+  {id:"4",title:"Solar Installer",company:"SunPower Residential",location:"Austin, TX",work_mode:"onsite",salary:"$55K-$72K",dist_miles:12.4,posted:"2d ago",lat:30.267,lng:-97.743,category:"Infrastructure"},
+  {id:"5",title:"Project Manager",company:"TechBuild Corp",location:"Dallas, TX",work_mode:"hybrid",salary:"$95K-$130K",dist_miles:18.3,posted:"2d ago",lat:32.777,lng:-96.797,category:"Consulting"},
+  {id:"6",title:"Sales Coordinator",company:"MidWest Supply",location:"Chicago, IL",work_mode:"onsite",salary:"$45K-$58K",dist_miles:5.4,posted:"1d ago",lat:41.878,lng:-87.63,category:"Sales"},
+  {id:"7",title:"Diesel Mechanic",company:"Heavy Equipment Solutions",location:"Houston, TX",work_mode:"onsite",salary:"$48K-$62K",dist_miles:9.1,posted:"3d ago",lat:29.76,lng:-95.37,category:"Manufacturing"},
+  {id:"8",title:"Senior Payroll Specialist",company:"FinancePro Inc",location:"Remote",work_mode:"remote",salary:"$70K-$90K",dist_miles:null,posted:"1d ago",lat:null,lng:null,category:"Finance"},
+  {id:"9",title:"Full Stack Engineer",company:"Joveo",location:"Remote (US)",work_mode:"remote",salary:"$125K-$165K",dist_miles:null,posted:"2d ago",lat:null,lng:null,category:"IT"},
+  {id:"10",title:"Retail Sales Consultant",company:"AT&T",location:"Rockford, IL",work_mode:"onsite",salary:"$38K-$52K",dist_miles:7.6,posted:"3d ago",lat:42.271,lng:-89.094,category:"Sales"},
+  {id:"11",title:"Carpenter Foreman",company:"Heritage Builders",location:"South Beloit, IL",work_mode:"onsite",salary:"$62K-$80K",dist_miles:4.2,posted:"2d ago",lat:42.489,lng:-89.037,category:"Infrastructure"},
+  {id:"12",title:"Data Scientist",company:"RemoteAI Corp",location:"Remote",work_mode:"remote",salary:"$130K-$170K",dist_miles:null,posted:"1d ago",lat:null,lng:null,category:"AI"},
 ];
-
-const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
-const MODE: Record<string, { label: string; color: string; bg: string }> = {
-  remote: { label: "Remote", color: "#34D399", bg: "rgba(5,46,22,0.6)" },
-  hybrid: { label: "Hybrid", color: "#60A5FA", bg: "rgba(12,25,41,0.6)" },
-  onsite: { label: "On-site", color: "#FB923C", bg: "rgba(28,25,23,0.6)" },
-};
-
-const fmt$ = (n: number) => `$${Math.round(n / 1000)}K`;
-const fmtSalary = (min: number, max: number) => min && max ? `${fmt$(min)} – ${fmt$(max)}` : null;
-
-function timeAgo(d: string) {
-  const h = Math.floor((Date.now() - new Date(d).getTime()) / 3600000);
-  if (h < 1) return "Just now";
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
-}
-
-function DistBadge({ miles, mode }: { miles: number | null; mode: string }) {
-  if (mode === "remote") return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: "#34D399", fontFamily: "monospace" }}>
-      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#34D399" }} /> Anywhere
-    </span>
-  );
-  const c = (miles ?? 99) <= 5 ? "#34D399" : (miles ?? 99) <= 15 ? "#FACC15" : "#FB923C";
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: c, fontFamily: "monospace" }}>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      {miles} mi
-    </span>
-  );
-}
-
-function JobCard({ job, onApply }: { job: Job; onApply: (j: Job) => void }) {
-  const m = MODE[job.work_mode] || MODE.onsite;
-  const salary = fmtSalary(job.salary_min, job.salary_max);
-  return (
-    <div
-      className="group rounded-2xl transition-all duration-200 cursor-pointer"
-      style={{ background: "#111", border: "1px solid #1E1E1E", padding: "16px 20px", animation: "slideUp 0.3s ease both" }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = "#333"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = "#1E1E1E"; e.currentTarget.style.transform = "translateY(0)"; }}
-    >
-      <div className="flex justify-between items-start gap-3 flex-wrap">
-        <div className="flex-1 min-w-[200px]">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h3 className="text-[15px] font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "-0.01em", color: "#F5F5F5", margin: 0 }}>{job.title}</h3>
-            <span style={{ background: m.bg, color: m.color, fontSize: 10, padding: "2px 8px", borderRadius: 100, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{m.label}</span>
-          </div>
-          <div style={{ fontSize: 13, color: "#777", marginBottom: 8 }}>{job.company} &middot; {job.location}</div>
-          <div className="flex gap-1.5 flex-wrap mb-2">
-            {job.tags.slice(0, 4).map(t => (
-              <span key={t} style={{ background: "#1A1A1A", color: "#555", fontSize: 10, padding: "2px 8px", borderRadius: 5, border: "1px solid #222" }}>{t}</span>
-            ))}
-          </div>
-          <div className="flex items-center gap-3" style={{ fontSize: 13, color: "#666" }}>
-            {salary && <span style={{ fontWeight: 600, color: "#BBB", fontFamily: "monospace", fontSize: 12 }}>{salary}</span>}
-            {salary && <span style={{ color: "#333" }}>|</span>}
-            <span>{timeAgo(job.created_at)}</span>
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-2 min-w-[80px]">
-          <DistBadge miles={job.dist_miles} mode={job.work_mode} />
-          <button onClick={e => { e.stopPropagation(); onApply(job); }}
-            className="rounded-lg px-4 py-2 text-xs font-bold text-white transition-transform hover:scale-105 active:scale-95"
-            style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)", border: "none", cursor: "pointer" }}
-          >Quick Apply</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function Home() {
-  const [zip, setZip] = useState("");
-  const [radius, setRadius] = useState(25);
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [locName, setLocName] = useState("");
-  const [locating, setLocating] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
-  const [zipError, setZipError] = useState("");
-
-  const search = useCallback(() => {
-    setLoading(true); setSearched(true); setZipError("");
-    if (!zip && !locName) setLocName("Roscoe, IL");
-    setTimeout(() => {
-      const filtered = MOCK_JOBS
-        .filter(j => j.work_mode === "remote" || (j.dist_miles != null && j.dist_miles <= radius))
-        .sort((a, b) => {
-          if (a.work_mode === "remote" && b.work_mode !== "remote") return 1;
-          if (b.work_mode === "remote" && a.work_mode !== "remote") return -1;
-          return (a.dist_miles || 9999) - (b.dist_miles || 9999);
-        });
-      setJobs(filtered); setLoading(false);
-    }, 600);
-  }, [radius, zip, locName]);
-
-  const handleZipChange = (val: string) => {
-    const clean = val.replace(/\D/g, "").slice(0, 5);
-    setZip(clean); setZipError("");
-    if (clean.length === 5) setLocName(`ZIP ${clean}`);
-  };
-
-  const handleSearch = () => {
-    if (!zip && !locName) { setZipError("Enter a ZIP code or use GPS"); return; }
-    if (zip && zip.length < 5) { setZipError("Enter a valid 5-digit ZIP"); return; }
-    search();
-  };
-
-  const useGPS = () => {
-    if (!navigator.geolocation) return;
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      () => { setLocName("Your Location"); setZip(""); setLocating(false); search(); },
-      () => { setLocating(false); setZipError("GPS denied — enter ZIP instead"); },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  };
-
-  useEffect(() => { if (searched) search(); }, [radius]);
-
-  const total = jobs.length;
-  const remote = jobs.filter(j => j.work_mode === "remote").length;
-  const local = total - remote;
-
-  return (
-    <div className="min-h-screen" style={{ background: "#0A0A0A" }}>
-      {toast && (
-        <div className="fixed top-4 right-4 rounded-xl px-5 py-3 z-50 flex items-center gap-3 shadow-2xl"
-          style={{ background: "#052E16", border: "1px solid #065F46", animation: "fadeIn 0.3s ease" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-          <div><div style={{ fontSize: 13, fontWeight: 700, color: "#34D399" }}>Applied!</div><div style={{ fontSize: 11, color: "#6EE7B7" }}>{toast}</div></div>
-          <button onClick={() => setToast(null)} style={{ background: "none", border: "none", color: "#34D399", cursor: "pointer", fontSize: 18, marginLeft: 6 }}>&times;</button>
-        </div>
-      )}
-
-      <div className="max-w-3xl mx-auto px-4 pt-7 pb-16">
-        <div className="flex items-center gap-2 mb-1">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#2563EB", fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase" }}>Joblet.ai</span>
-        </div>
-        <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "-0.03em", margin: "0 0 4px" }}>Jobs Near Me</h1>
-        <p style={{ margin: "0 0 20px", fontSize: 14, color: "#555" }}>Enter your ZIP code, choose a radius, and find the closest jobs.</p>
-
-        {/* Search */}
-        <div className="rounded-2xl p-4 mb-1.5" style={{ background: "#111", border: "1px solid #1E1E1E" }}>
-          <div className="flex gap-2.5 flex-wrap items-end">
-            <div style={{ minWidth: 140 }}>
-              <label className="block text-[10px] uppercase tracking-widest font-bold mb-1" style={{ color: "#555" }}>Your ZIP code</label>
-              <div className="flex gap-1.5">
-                <input type="text" inputMode="numeric" placeholder="e.g. 61073" value={zip}
-                  onChange={e => handleZipChange(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter") handleSearch(); }}
-                  className="outline-none transition-colors text-center"
-                  style={{ width: 110, background: "#0A0A0A", border: `1px solid ${zipError ? "#E24B4A" : "#222"}`, borderRadius: 10, padding: "9px 12px", color: "#F5F5F5", fontSize: 16, fontFamily: "monospace", fontWeight: 700, letterSpacing: "0.15em" }}
-                  onFocus={e => { if (!zipError) e.currentTarget.style.borderColor = "#2563EB"; }}
-                  onBlur={e => { if (!zipError) e.currentTarget.style.borderColor = "#222"; }}
-                />
-                <button onClick={useGPS} disabled={locating} title="Use GPS"
-                  className="flex items-center transition-colors"
-                  style={{ background: "#0A0A0A", border: "1px solid #222", borderRadius: 10, padding: "8px 10px", cursor: "pointer", color: locating ? "#2563EB" : "#555" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "#2563EB"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "#222"}>
-                  {locating
-                    ? <span style={{ width: 16, height: 16, border: "2px solid #2563EB", borderTopColor: "transparent", borderRadius: "50%", display: "block", animation: "spin 0.8s linear infinite" }} />
-                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
-                  }
-                </button>
-              </div>
-            </div>
-            <div className="flex-1" style={{ minWidth: 180 }}>
-              <label className="block text-[10px] uppercase tracking-widest font-bold mb-1" style={{ color: "#555" }}>Radius (miles)</label>
-              <div className="flex gap-1">
-                {RADIUS_OPTIONS.map(r => (
-                  <button key={r} onClick={() => setRadius(r)}
-                    className="flex-1 rounded-lg py-2 text-sm font-bold transition-all"
-                    style={{ background: radius === r ? "#2563EB" : "#0A0A0A", color: radius === r ? "#fff" : "#444", border: `1px solid ${radius === r ? "#2563EB" : "#222"}`, fontFamily: "monospace", cursor: "pointer" }}
-                  >{r}</button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-[10px] mb-1 invisible">.</label>
-              <button onClick={handleSearch}
-                className="rounded-lg px-7 py-2 text-sm font-bold text-white transition-transform hover:scale-[1.03] active:scale-95"
-                style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}
-              >Find Jobs</button>
-            </div>
-          </div>
-          {zipError && <div style={{ marginTop: 8, fontSize: 12, color: "#E24B4A", fontWeight: 600 }}>{zipError}</div>}
-        </div>
-        <div style={{ fontSize: 11, color: "#333", marginBottom: 20, paddingLeft: 4 }}>Your ZIP code is only used to calculate distance. We don&apos;t store your location.</div>
-
-        {/* Results header */}
-        {searched && !loading && (
-          <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
-            <div>
-              <span className="text-base font-bold">{total} jobs</span>
-              <span className="text-sm ml-1.5" style={{ color: "#555" }}>{local > 0 && <>{local} within {radius} mi of {locName || `ZIP ${zip}`}</>}</span>
-              {remote > 0 && <span className="text-xs ml-2" style={{ color: "#34D399" }}>+{remote} remote</span>}
-            </div>
-            <span className="text-[11px] px-2.5 py-1 rounded-md" style={{ color: "#333", background: "#111", border: "1px solid #1E1E1E" }}>Nearest first</span>
-          </div>
-        )}
-
-        {loading && (
-          <div className="py-16 text-center">
-            <div style={{ width: 28, height: 28, border: "3px solid #1E1E1E", borderTopColor: "#2563EB", borderRadius: "50%", margin: "0 auto 12px", animation: "spin 0.8s linear infinite" }} />
-            <div style={{ fontSize: 13, color: "#444" }}>Finding jobs near {locName || `ZIP ${zip}`}...</div>
-          </div>
-        )}
-
-        {searched && !loading && total === 0 && (
-          <div className="py-14 text-center">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="1.5" style={{ marginBottom: 12 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div style={{ fontSize: 15, fontWeight: 600, color: "#666", marginBottom: 6 }}>No jobs within {radius} miles</div>
-            <div style={{ fontSize: 13, color: "#444", marginBottom: 14 }}>Try a wider radius</div>
-            <button onClick={() => setRadius(Math.min(radius * 2, 100))}
-              style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "8px 20px", color: "#2563EB", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
-            >Expand to {Math.min(radius * 2, 100)} miles</button>
-          </div>
-        )}
-
-        {!loading && <div className="flex flex-col gap-2">
-          {jobs.map((j, i) => (
-            <div key={j.id} style={{ animationDelay: `${i * 50}ms` }}>
-              <JobCard job={j} onApply={job => { setToast(`${job.title} at ${job.company}`); setTimeout(() => setToast(null), 3000); }} />
-            </div>
-          ))}
-        </div>}
-
-        {!searched && (
-          <div className="py-14 text-center">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1" style={{ marginBottom: 14 }}>
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-            </svg>
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#333", marginBottom: 4 }}>Enter your ZIP code to get started</div>
-            <div style={{ fontSize: 13, color: "#222" }}>We&apos;ll show jobs sorted by distance from you</div>
-            <div className="flex justify-center gap-4 mt-6 flex-wrap">
-              {[{ zip: "61073", label: "Roscoe, IL" }, { zip: "78701", label: "Austin, TX" }, { zip: "10001", label: "New York, NY" }, { zip: "90210", label: "Beverly Hills" }].map(ex => (
-                <button key={ex.zip} onClick={() => { setZip(ex.zip); setLocName(ex.label); }}
-                  className="rounded-xl transition-colors text-center"
-                  style={{ background: "#111", border: "1px solid #1E1E1E", padding: "10px 16px", cursor: "pointer" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "#2563EB"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "#1E1E1E"}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#F5F5F5", fontFamily: "monospace", letterSpacing: "0.1em" }}>{ex.zip}</div>
-                  <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>{ex.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+const RADIUS=[5,10,25,50,100];
+const DOT:Record<string,string>={onsite:"#D42B2B",hybrid:"#C48A2B",remote:"#2B8C5A"};
+const LBL:Record<string,string>={onsite:"On-site",hybrid:"Hybrid",remote:"Remote"};
+interface Job{id:string;title:string;company:string;location:string;work_mode:string;salary:string;dist_miles:number|null;posted:string;lat:number|null;lng:number|null;category:string}
+function GridJ({size=20}:{size?:number}){const s=size/4,g=s*0.12,r=s*0.18;const B=[{x:2,y:0,f:"#D42B2B"},{x:1,y:1,f:"#D5D5D5"},{x:2,y:1,f:"#1A1A1A"},{x:0,y:2,f:"#1A1A1A"},{x:1,y:2,f:"#D5D5D5"},{x:2,y:2,f:"#1A1A1A"},{x:1,y:3,f:"#1A1A1A"},{x:2,y:3,f:"#1A1A1A"}];return(<svg width={size} height={size} viewBox={`0 0 ${s*3+g*2} ${s*4+g*3}`}>{B.map((b,i)=>(<rect key={i} x={b.x*(s+g)} y={b.y*(s+g)} width={s} height={s} rx={r} fill={b.f} opacity={b.f==="#D5D5D5"?0.35:1}/>))}</svg>)}
+function JMap({jobs,hovId,onHov,onSel,radius}:{jobs:Job[];hovId:string|null;onHov:(id:string|null)=>void;onSel:(j:Job)=>void;radius:number}){const mj=jobs.filter(j=>j.lat&&j.lng);const cLat=mj.length?mj.reduce((s,j)=>s+(j.lat||0),0)/mj.length:39.8;const cLng=mj.length?mj.reduce((s,j)=>s+(j.lng||0),0)/mj.length:-98.6;const z=radius<=5?11:radius<=10?10:radius<=25?9:radius<=50?8:7;const sc=Math.pow(2,z)*256/360;
+function pr(lat:number,lng:number){const x=(lng-cLng)*sc+200;const lr=lat*Math.PI/180;const cr=cLat*Math.PI/180;const y=(Math.log(Math.tan(Math.PI/4+cr/2))-Math.log(Math.tan(Math.PI/4+lr/2)))*sc*(180/Math.PI)+160;return{x:Math.max(10,Math.min(390,x)),y:Math.max(10,Math.min(310,y))}}
+return(<div style={{width:"100%",height:320,borderRadius:14,overflow:"hidden",position:"relative",background:"#E8E3DF",border:"1px solid #E0DBD6"}}><div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(245,240,236,0.9),rgba(240,235,235,0.8))"}}/>
+<svg style={{position:"absolute",inset:0}} viewBox="0 0 400 320"><circle cx="200" cy="160" r={Math.min(140,radius*2.5)} fill="rgba(212,43,43,0.04)" stroke="#D42B2B" strokeWidth="1" strokeDasharray="4 3" opacity="0.5"/><circle cx="200" cy="160" r="5" fill="#D42B2B"/><circle cx="200" cy="160" r="10" fill="none" stroke="#D42B2B" strokeWidth="1" opacity="0.4"/>
+{mj.map(j=>{const p=pr(j.lat!,j.lng!);const h=hovId===j.id;return(<g key={j.id} style={{cursor:"pointer"}} onClick={()=>onSel(j)} onMouseEnter={()=>onHov(j.id)} onMouseLeave={()=>onHov(null)}><circle cx={p.x} cy={p.y} r={h?8:5} fill={DOT[j.work_mode]} opacity={h?1:0.8}/>{h&&<><rect x={p.x-60} y={p.y-32} width={120} height={24} rx={6} fill="#1A1A1A" opacity="0.92"/><text x={p.x} y={p.y-17} textAnchor="middle" fill="#fff" fontSize="10" fontFamily="sans-serif" fontWeight="500">{j.title.length>18?j.title.substring(0,18)+"...":j.title}</text></>}</g>)})}</svg>
+<div style={{position:"absolute",bottom:10,left:10,display:"flex",gap:10,fontSize:10,color:"#777"}}>{Object.entries(DOT).map(([k,c])=>(<span key={k} style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:6,height:6,borderRadius:"50%",background:c}}/>{LBL[k]}</span>))}</div><div style={{position:"absolute",bottom:10,right:10,fontSize:10,color:"#BBB"}}>{radius} mi radius</div></div>)}
+function JCard({job,isH,onH,onA}:{job:Job;isH:boolean;onH:(id:string|null)=>void;onA:(j:Job)=>void}){return(<div style={{background:isH?"#FBF7F4":"#FFFFFF",borderRadius:10,padding:"14px 18px",border:`1px solid ${isH?"#D42B2B":"#EDEBE8"}`,transition:"all 0.15s",cursor:"pointer"}} onMouseEnter={()=>onH(job.id)} onMouseLeave={()=>onH(null)}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}><h3 style={{margin:0,fontSize:14,fontWeight:600,color:"#1A1A1A",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{job.title}</h3><span style={{width:5,height:5,borderRadius:"50%",background:DOT[job.work_mode],flexShrink:0}}/></div><div style={{fontSize:12,color:"#999",marginBottom:6}}>{job.company}</div><div style={{display:"flex",alignItems:"center",gap:10,fontSize:12}}><span style={{color:"#777"}}>{job.location}</span><span style={{color:"#1A1A1A",fontWeight:600,fontFamily:"monospace",fontSize:11}}>{job.salary}</span></div></div><div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>{job.work_mode==="remote"?<span style={{fontSize:11,color:"#2B8C5A",fontWeight:600,fontFamily:"monospace"}}>Remote</span>:<span style={{fontSize:11,color:(job.dist_miles||99)<=5?"#2B8C5A":(job.dist_miles||99)<=15?"#C48A2B":"#D42B2B",fontWeight:600,fontFamily:"monospace"}}>{job.dist_miles} mi</span>}<button onClick={e=>{e.stopPropagation();onA(job)}} style={{background:"#1A1A1A",color:"#F5F0EC",border:"none",borderRadius:6,padding:"5px 14px",fontSize:11,fontWeight:600,cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e=>(e.currentTarget.style.background="#D42B2B")} onMouseLeave={e=>(e.currentTarget.style.background="#1A1A1A")}>Apply</button></div></div></div>)}
+export default function Home(){const[zip,setZip]=useState("");const[r,setR]=useState(25);const[jobs,setJobs]=useState<Job[]>([]);const[loading,setLoading]=useState(false);const[searched,setSearched]=useState(false);const[loc,setLoc]=useState("");const[locating,setLocating]=useState(false);const[toast,setToast]=useState<string|null>(null);const[err,setErr]=useState("");const[hovId,setHovId]=useState<string|null>(null);const[view,setView]=useState("split");
+const search=useCallback(()=>{setLoading(true);setSearched(true);setErr("");if(!zip&&!loc)setLoc("Roscoe, IL");setTimeout(()=>{setJobs(JOBS.filter(j=>j.work_mode==="remote"||(j.dist_miles!=null&&j.dist_miles<=r)).sort((a,b)=>{if(a.work_mode==="remote"&&b.work_mode!=="remote")return 1;if(b.work_mode==="remote"&&a.work_mode!=="remote")return -1;return(a.dist_miles||9999)-(b.dist_miles||9999)}));setLoading(false)},400)},[r,zip,loc]);
+const gps=()=>{if(!navigator.geolocation)return;setLocating(true);navigator.geolocation.getCurrentPosition(()=>{setLoc("Your location");setZip("");setLocating(false);search()},()=>{setLocating(false);setErr("Location denied")},{enableHighAccuracy:true,timeout:8000})};
+useEffect(()=>{if(searched)search()},[r]);
+const total=jobs.length;const remote=jobs.filter(j=>j.work_mode==="remote").length;
+return(<div style={{minHeight:"100vh",background:"#F5F0EC",fontFamily:"'Instrument Sans',sans-serif"}}><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet"/><style>{`@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}input::placeholder{color:#CCC}*{box-sizing:border-box;margin:0}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#D5D5D5;border-radius:4px}`}</style>
+{toast&&<div style={{position:"fixed",top:16,right:16,background:"#1A1A1A",borderRadius:10,padding:"10px 18px",zIndex:100,display:"flex",alignItems:"center",gap:8,animation:"fadeUp 0.25s ease",color:"#fff",fontSize:13,fontWeight:500}}>Applied to {toast}<button onClick={()=>setToast(null)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:16,marginLeft:4}}>&times;</button></div>}
+<div style={{maxWidth:900,margin:"0 auto",padding:"24px 16px 60px"}}>
+<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}><div style={{display:"flex",alignItems:"center",gap:8}}><GridJ size={24}/><span style={{fontSize:15,fontWeight:600,color:"#1A1A1A",letterSpacing:"-0.02em"}}>job<span style={{color:"#D42B2B"}}>let</span>.ai</span></div><span style={{fontSize:11,color:"#CCC"}}>Jobs Near Me</span></div>
+<div style={{background:"#FFFFFF",borderRadius:14,padding:"16px 18px",border:"1px solid #EDEBE8",marginBottom:16}}><div style={{display:"flex",gap:10,alignItems:"flex-end",flexWrap:"wrap"}}><div><label style={{display:"block",fontSize:10,color:"#BBB",fontWeight:600,marginBottom:5,letterSpacing:"0.06em",textTransform:"uppercase"}}>ZIP code</label><div style={{display:"flex",gap:4}}><input type="text" inputMode="numeric" placeholder="10001" value={zip} onChange={e=>{const v=e.target.value.replace(/\D/g,"").slice(0,5);setZip(v);setErr("");if(v.length===5)setLoc(`ZIP ${v}`)}} onKeyDown={e=>{if(e.key==="Enter"&&zip.length===5)search()}} style={{width:90,background:"#F5F0EC",border:`1.5px solid ${err?"#D42B2B":"#EDEBE8"}`,borderRadius:8,padding:"9px 10px",color:"#1A1A1A",fontSize:17,fontFamily:"monospace",fontWeight:600,letterSpacing:"0.12em",textAlign:"center",outline:"none"}} onFocus={e=>e.currentTarget.style.borderColor="#D42B2B"} onBlur={e=>{if(!err)e.currentTarget.style.borderColor="#EDEBE8"}}/><button onClick={gps} disabled={locating} style={{background:"#F5F0EC",border:"1.5px solid #EDEBE8",borderRadius:8,padding:"7px 9px",cursor:"pointer",color:locating?"#D42B2B":"#BBB",display:"flex",alignItems:"center"}} onMouseEnter={e=>e.currentTarget.style.borderColor="#D42B2B"} onMouseLeave={e=>e.currentTarget.style.borderColor="#EDEBE8"}>{locating?<span style={{width:14,height:14,border:"2px solid #D42B2B",borderTopColor:"transparent",borderRadius:"50%",display:"block",animation:"spin 0.7s linear infinite"}}/>:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>}</button></div></div>
+<div style={{flex:1,minWidth:160}}><label style={{display:"block",fontSize:10,color:"#BBB",fontWeight:600,marginBottom:5,letterSpacing:"0.06em",textTransform:"uppercase"}}>Radius</label><div style={{display:"flex",gap:2}}>{RADIUS.map(v=>(<button key={v} onClick={()=>setR(v)} style={{flex:1,borderRadius:6,padding:"9px 0",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"monospace",background:r===v?"#1A1A1A":"#F5F0EC",color:r===v?"#F5F0EC":"#BBB",border:`1px solid ${r===v?"#1A1A1A":"#EDEBE8"}`,transition:"all 0.12s"}}>{v}</button>))}<span style={{alignSelf:"center",fontSize:10,color:"#CCC",marginLeft:2}}>mi</span></div></div>
+<div><label style={{display:"block",fontSize:10,color:"transparent",marginBottom:5}}>&nbsp;</label><button onClick={()=>{if(!zip&&!loc){setErr("Enter ZIP");return}if(zip&&zip.length<5){setErr("5 digits");return}search()}} style={{background:"#D42B2B",color:"#fff",border:"none",borderRadius:8,padding:"9px 24px",fontSize:13,fontWeight:600,cursor:"pointer",transition:"background 0.15s",whiteSpace:"nowrap"}} onMouseEnter={e=>e.currentTarget.style.background="#B82424"} onMouseLeave={e=>e.currentTarget.style.background="#D42B2B"}>Find jobs</button></div></div>{err&&<div style={{marginTop:6,fontSize:11,color:"#D42B2B",fontWeight:500}}>{err}</div>}</div>
+{searched&&!loading&&<><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><span style={{fontSize:13,fontWeight:600,color:"#1A1A1A"}}>{total} jobs <span style={{fontWeight:400,color:"#BBB"}}>within {r} mi</span>{remote>0&&<span style={{color:"#2B8C5A",marginLeft:6,fontSize:11}}>+{remote} remote</span>}</span><div style={{display:"flex",gap:2,background:"#EDEBE8",borderRadius:6,padding:2}}>{(["split","list","map"] as const).map(v=>(<button key={v} onClick={()=>setView(v)} style={{padding:"4px 10px",borderRadius:4,fontSize:11,fontWeight:500,border:"none",cursor:"pointer",background:view===v?"#fff":"transparent",color:view===v?"#1A1A1A":"#BBB",transition:"all 0.12s"}}>{v==="split"?"Split":v==="list"?"List":"Map"}</button>))}</div></div>
+<div style={{display:"flex",gap:12,alignItems:"flex-start"}}>{(view==="split"||view==="list")&&<div style={{flex:view==="split"?"0 0 52%":"1",display:"flex",flexDirection:"column",gap:6,maxHeight:view==="split"?320:"none",overflowY:view==="split"?"auto":"visible",paddingRight:view==="split"?4:0}}>{jobs.map((j,i)=>(<div key={j.id} style={{animation:`fadeUp 0.25s ease ${i*30}ms both`}}><JCard job={j} isH={hovId===j.id} onH={setHovId} onA={job=>{setToast(job.title);setTimeout(()=>setToast(null),2500)}}/></div>))}</div>}{(view==="split"||view==="map")&&<div style={{flex:view==="split"?"0 0 46%":"1",position:view==="split"?"sticky":"static",top:80}}><JMap jobs={jobs} hovId={hovId} onHov={setHovId} onSel={j=>setToast(j.title)} radius={r}/></div>}</div></>}
+{loading&&<div style={{padding:"60px 0",textAlign:"center"}}><div style={{width:22,height:22,border:"2.5px solid #EDEBE8",borderTopColor:"#D42B2B",borderRadius:"50%",margin:"0 auto 12px",animation:"spin 0.7s linear infinite"}}/><div style={{fontSize:13,color:"#BBB"}}>Searching near {loc||`ZIP ${zip}`}...</div></div>}
+{searched&&!loading&&total===0&&<div style={{padding:"50px 0",textAlign:"center"}}><div style={{fontSize:14,color:"#999",marginBottom:8}}>No jobs within {r} miles</div><button onClick={()=>setR(Math.min(r*2,100))} style={{background:"#fff",border:"1px solid #EDEBE8",borderRadius:8,padding:"7px 18px",color:"#D42B2B",fontSize:12,fontWeight:600,cursor:"pointer"}}>Try {Math.min(r*2,100)} mi</button></div>}
+{!searched&&<div style={{padding:"40px 0",textAlign:"center"}}><GridJ size={48}/><h2 style={{margin:"16px 0 4px",fontSize:24,fontWeight:700,color:"#1A1A1A",fontFamily:"'Crimson Pro',serif",letterSpacing:"-0.02em"}}>Find jobs close to home</h2><p style={{fontSize:13,color:"#BBB",marginBottom:20}}>Enter your ZIP code and see what&apos;s nearby</p><div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}}>{[{z:"10001",l:"New York"},{z:"60601",l:"Chicago"},{z:"78701",l:"Austin"},{z:"90001",l:"Los Angeles"}].map(ex=>(<button key={ex.z} onClick={()=>{setZip(ex.z);setLoc(ex.l)}} style={{background:"#fff",border:"1.5px solid #EDEBE8",borderRadius:10,padding:"10px 16px",cursor:"pointer",transition:"border-color 0.15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="#D42B2B"} onMouseLeave={e=>e.currentTarget.style.borderColor="#EDEBE8"}><div style={{fontSize:15,fontWeight:600,color:"#1A1A1A",fontFamily:"monospace",letterSpacing:"0.08em"}}>{ex.z}</div><div style={{fontSize:10,color:"#CCC",marginTop:2}}>{ex.l}</div></button>))}</div></div>}
+</div></div>)}
