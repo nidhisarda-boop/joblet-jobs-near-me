@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 
 interface Job {
   id: string; title: string; company: string; location: string;
@@ -39,7 +38,6 @@ function FitBounds({ jobs }: { jobs: Job[] }) {
   }, [jobs, map]);
   return null;
 }
-
 export default function MapView({
   jobs, hovId, onHov, onSel, radius,
 }: {
