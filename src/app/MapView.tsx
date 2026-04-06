@@ -5,7 +5,7 @@ import L from "leaflet";
 
 interface Job {
   id: string; title: string; company: string; location: string;
-  work_mode: string; salary: string; dist_miles: number | null;
+  work_mode: string; salary: string; posted: string; dist_miles: number | null;
   lat: number | null; lng: number | null;
 }
 
