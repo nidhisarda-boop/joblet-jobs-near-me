@@ -4,12 +4,12 @@ import dynamic from "next/dynamic";
 const MapView = dynamic(() => import("./MapView"), {ssr:false,loading:()=>(<div style={{width:"100%",height:340,borderRadius:14,background:"#E8E3DF",display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid #E0DBD6"}}><div style={{width:22,height:22,border:"2.5px solid #EDEBE8",borderTopColor:"#D42B2B",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/></div>)});
 const JOBS=[
 {id:"1",title:"Electrical Engineer",company:"Empire Electric",location:"Manhasset, NY",work_mode:"onsite",salary:"$92K-$105K",dist_miles:3.2,posted:"1d ago",lat:40.798,lng:-73.699},
-{id:"2",title:"Construction Supt.",company:"Imagine Unlimited",location:"Temple, TX",work_mode:"onsite",salary:"$85K-$110K",dist_miles:8.7,posted:"1d ago",lat:31.098,lng:-97.343},
+{id:"2",title:"Construction Supt.",company:"Imagine Uimited",location:"Temple, TX",work_mode:"onsite",salary:"$85K-$110K",dist_miles:8.7,posted:"1d ago",lat:31.098,lng:-97.343},
 {id:"3",title:"CDL Truck Driver",company:"Naeve Inc.",location:"Roscoe, IL",work_mode:"onsite",salary:"$78K+",dist_miles:2.1,posted:"1d ago",lat:42.413,lng:-89.009},
 {id:"4",title:"Solar Installer",company:"SunPower",location:"Austin, TX",work_mode:"onsite",salary:"$55K-$72K",dist_miles:12.4,posted:"2d ago",lat:30.267,lng:-97.743},
 {id:"5",title:"Project Manager",company:"TechBuild",location:"Dallas, TX",work_mode:"hybrid",salary:"$95K-$130K",dist_miles:18.3,posted:"2d ago",lat:32.777,lng:-96.797},
 {id:"6",title:"Sales Coordinator",company:"CPS Outdoors",location:"Miami, FL",work_mode:"onsite",salary:"$45K-$58K",dist_miles:5.4,posted:"1d ago",lat:25.762,lng:-80.192},
-{id:"7",title:"Diesel Mechanic",company:"Blade Construction",location:"Point Clear, AL",work_mode:"onsite",salary:"$48K-$62K",dist_miles:9.1,posted:"3d ago",lat:30.474,lng:-87.919},
+{id:"7",title:"Diesel Mechanic",company:"Blade Constrution",location:"Point Clear, AL",work_mode:"onsite",salary:"$48K-$62K",dist_miles:9.1,posted:"3d ago",lat:30.474,lng:-87.919},
 {id:"8",title:"Payroll Specialist",company:"Jones & Co.",location:"Mineral Wells, WV",work_mode:"onsite",salary:"$70K-$90K",dist_miles:15.2,posted:"1d ago",lat:39.188,lng:-81.164},
 {id:"9",title:"Full Stack Engineer",company:"Joveo",location:"Remote (US)",work_mode:"remote",salary:"$125K-$165K",dist_miles:null,posted:"2d ago",lat:null,lng:null},
 {id:"10",title:"Retail Sales",company:"AT&T",location:"Rockford, IL",work_mode:"onsite",salary:"$38K-$52K",dist_miles:7.6,posted:"3d ago",lat:42.271,lng:-89.094},
@@ -39,7 +39,7 @@ return(<div style={{width:"100%",height:size,borderRadius:14,background:"#fff",b
 </svg>
 <div style={{position:"absolute",bottom:8,left:0,right:0,display:"flex",justifyContent:"center",gap:12,fontSize:10,color:"#BBB"}}>
 <span><span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#D42B2B",marginRight:3,verticalAlign:"middle"}}/>On-site</span>
-span><span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#C48A2B",marginRight:3,verticalAlign:"middle"}}/>Hybrid</span>
+<span><span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#C48A2B",marginRight:3,verticalAlign:"middle"}}/>Hybrid</span>
 <span><span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#2B8C5A",marginRight:3,verticalAlign:"middle"}}/>Remote</span>
 </div>
 <div style={{position:"absolute",top:8,right:12,fontSize:10,color:"#BBB",fontFamily:"monospace"}}>{radius} mi radius</div>
